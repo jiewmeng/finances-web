@@ -22,3 +22,7 @@ body {
 .error {
     color: var(--error-color);
 }
+
+.nav-menu {
+  margin-left: 10px;
+}

@@ -8,21 +8,14 @@ import Header from 'grommet/components/Header'
 import Heading from 'grommet/components/Heading'
 import Button from 'grommet/components/Button'
 
-export class LoginPage extends React.Component {
-  static login() {
-    const googleProvider = new firebase.auth.GoogleAuthProvider()
-    firebase.auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => firebase.auth().signInWithPopup(googleProvider))
-      .catch((err) => {
-        console.error('Signin fail', err)
-      })
-  }
+import { addToast } from '../home'
 
+export class LoginPage extends React.Component {
   constructor(params) {
     super(params)
 
     this.handleLoggedInUser = this.handleLoggedInUser.bind(this)
+    this.login = this.login.bind(this)
   }
 
   componentWillMount() {
@@ -34,10 +27,21 @@ export class LoginPage extends React.Component {
   }
 
   handleLoggedInUser(props) {
-    const user = props.user || this.props.user
+    const user = props ? (props.user || this.props.user) : this.props.user
     if (user) {
       this.props.gotoExpenses()
     }
+  }
+
+  login() {
+    const googleProvider = new firebase.auth.GoogleAuthProvider()
+    firebase.auth()
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => firebase.auth().signInWithPopup(googleProvider))
+      .then(() => this.props.addToast('Successfully logged in'))
+      .catch((err) => {
+        this.props.addToast(`Failed to sign in: ${err.message}`)
+      })
   }
 
   render() {
@@ -47,7 +51,7 @@ export class LoginPage extends React.Component {
           <Heading margin="medium">Login</Heading>
         </Header>
 
-        <Button label="Login with Google" primary onClick={LoginPage.login} />
+        <Button label="Login with Google" primary onClick={this.login} />
       </Box>
     )
   }
@@ -55,7 +59,8 @@ export class LoginPage extends React.Component {
 
 LoginPage.propTypes = {
   user: PropTypes.object,
-  gotoExpenses: PropTypes.func.isRequired
+  gotoExpenses: PropTypes.func.isRequired,
+  addToast: PropTypes.func.isRequired
 }
 
 LoginPage.defaultProps = {
@@ -70,7 +75,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    gotoExpenses: () => dispatch(push('/expenses'))
+    gotoExpenses: () => dispatch(push('/expenses')),
+    addToast: (message, status) => dispatch(addToast(message, status)),
   }
 }
 
