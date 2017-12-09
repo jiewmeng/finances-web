@@ -1,47 +1,57 @@
 import React from 'react'
-import {PropTypes} from 'prop-types'
-import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
-import Header from 'grommet/components/Header'
-import Box from 'grommet/components/Box'
-import Article from 'grommet/components/Article'
-import Title from 'grommet/components/Title'
+import { PropTypes } from 'prop-types'
+import { connect } from 'react-redux'
+import { push } from 'react-router-redux'
 
-import LoginForm from '../auth/LoginForm'
-import UserSection from '../user/UserSection'
+export class HomePage extends React.Component {
+  constructor(params) {
+    super(params)
 
-export function HomePage({isLoggedIn}) {
-  const authSection = isLoggedIn ?
-    <UserSection /> :
-    <LoginForm />
+    this.handleRedirects = this.handleRedirects.bind(this)
+  }
 
-  return (
-    <Article>
-      <Header fixed pad="medium" separator="bottom">
-        <Box full="horizontal">
-          <Title>
-            React Nucleus
-          </Title>
-        </Box>
-      </Header>
+  componentWillMount() {
+    this.handleRedirects()
+  }
 
-      {authSection}
-    </Article>
-  )
-}
+  componentWillUpdate() {
+    this.handleRedirects()
+  }
 
-HomePage.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired
-}
+  handleRedirects() {
+    if (this.props.user) {
+      this.props.gotoExpensesPage()
+    } else {
+      this.props.gotoLoginPage()
+    }
+  }
 
-const mapStateToProps = function (state) {
-  return {
-    isLoggedIn: Boolean(state.auth.token && state.auth.tokenExpiry > Date.now())
+  render() {
+    return <div />
   }
 }
 
-const mapDispatchToProps = function () {
-  return {}
+HomePage.propTypes = {
+  user: PropTypes.object,
+  gotoExpensesPage: PropTypes.func.isRequired,
+  gotoLoginPage: PropTypes.func.isRequired
+}
+
+HomePage.defaultProps = {
+  user: null
+}
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.user
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    gotoLoginPage: () => dispatch(push('/auth/login')),
+    gotoExpensesPage: () => dispatch(push('/expenses'))
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage)

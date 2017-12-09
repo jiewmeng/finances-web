@@ -1,11 +1,13 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import Box from 'grommet/components/Box'
+import Heading from 'grommet/components/Heading'
+import Button from 'grommet/components/Button'
 
 export default function () {
   return (
-    <div>
-      <h1>404 Page Not Found</h1>
-      <Link to="/">Home</Link>
-    </div>
+    <Box pad="large" align="center">
+      <Heading>404 Page Not Found</Heading>
+      <Button href="/" label="Back to home" primary />
+    </Box>
   )
 }
